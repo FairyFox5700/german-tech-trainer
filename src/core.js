@@ -108,6 +108,12 @@ export function scheduleReview(previous={}, rating, now=new Date().toISOString()
     correct:card.correct+1, lastReviewedAt:now, dueAt:addDays(now,intervalDays)};
 }
 
+export function toggleSaved(savedIds=[], id, remove=false) {
+  const unique=[...new Set(savedIds)];
+  if(remove) return unique.filter(savedId=>savedId!==id);
+  return unique.includes(id) ? unique : [...unique,id];
+}
+
 export function aggregateProgress(activity={}, now=new Date()) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekStart = new Date(today);

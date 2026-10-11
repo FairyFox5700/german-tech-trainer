@@ -6,7 +6,8 @@ import {
   selectMore,
   scheduleReview,
   aggregateProgress,
-  localDateKey
+  localDateKey,
+  toggleSaved
 } from '../src/core.js';
 
 const catalog = [
@@ -87,4 +88,16 @@ test('localDateKey respects the requested timezone', () => {
   const instant = new Date('2026-10-11T23:30:00.000Z');
   assert.equal(localDateKey(instant, 'Europe/Berlin'), '2026-10-12');
   assert.equal(localDateKey(instant, 'America/New_York'), '2026-10-11');
+});
+
+test('toggleSaved adds a word once without mutating the original list', () => {
+  const original = ['a'];
+  const updated = toggleSaved(original, 'b');
+  assert.deepEqual(updated, ['a', 'b']);
+  assert.deepEqual(original, ['a']);
+  assert.deepEqual(toggleSaved(updated, 'b'), ['a', 'b']);
+});
+
+test('toggleSaved removes an already saved word when requested', () => {
+  assert.deepEqual(toggleSaved(['a', 'b'], 'a', true), ['b']);
 });

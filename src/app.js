@@ -1,4 +1,4 @@
-import {selectDailySet, selectMore, scheduleReview, aggregateProgress, localDateKey} from './core.js';
+import {selectDailySet, selectMore, scheduleReview, aggregateProgress, localDateKey, toggleSaved} from './core.js';
 
 const STORAGE_KEY = 'werkwort.state.v1';
 const app = document.querySelector('#app');
@@ -13,7 +13,7 @@ let sessionStartedAt = Date.now();
 const defaultState = () => ({
   schemaVersion:1,
   settings:{dailyTarget:10,speechRate:0.9,listenFirst:false,levels:['B2','C1'],domains:[]},
-  cards:{}, dailySets:{}, activity:{}, currentSession:null, practiceCounter:0
+  cards:{}, dailySets:{}, activity:{}, savedIds:[], currentSession:null, practiceCounter:0
 });
 
 function loadState(){
@@ -49,6 +49,12 @@ function cardStatus(id){
   if(card.repetitions>=4&&card.intervalDays>=14)return 'Mastered';
   return card.status==='relearning'?'Relearning':'Learning';
 }
+function isSaved(id){return state.savedIds.includes(id);}
+function savedWords(){return state.savedIds.map(id=>byId.get(id)).filter(Boolean);}
+function savedDashboard(){
+  const words=savedWords().slice(-4).reverse();
+  return `<section class="card saved-dashboard"><div class="saved-head"><div><p class="eyebrow">Your collection</p><h2>Saved words</h2><p>Keep important terms together and practise them whenever you want.</p></div><b>${state.savedIds.length}</b></div>${words.length?`<div class="saved-preview">${words.map(word=>`<div><span lang="de">${esc(word.term)}</span><small>${esc(word.translation)} · ${word.level}</small></div>`).join('')}</div>`:`<div class="empty saved-empty">Save a word from a learning card or the library. It will appear here.</div>`}<div class="actions"><a class="button" href="#/library?saved=1">View saved words</a><button class="button secondary" data-action="practice-saved" ${words.length?'':'disabled'}>Practise saved words</button></div></section>`;
+}
 function updateStreak(){
   const active=new Set(Object.entries(state.activity).filter(([,v])=>(v.studied||0)>0).map(([k])=>k));
   let count=0,date=new Date();
@@ -76,7 +82,7 @@ function renderLearn(){
       <section class="card metric-card"><h3>Today</h3><div class="metric-row"><span>Studied</span><b>${stats.studied||0}</b></div><div class="metric-row"><span>Remembered</span><b>${stats.studied?Math.round((stats.correct||0)/stats.studied*100):0}%</b></div><div class="metric-row"><span>Due now</span><b>${dueIds().length}</b></div></section>
       <section class="card metric-card"><h3>How it works</h3><div class="metric-row"><span>Reading</span><b>German + English</b></div><div class="metric-row"><span>Listening</span><b>Word + sentence</b></div><p class="muted">Use Again, Hard, Good, or Easy. WerkWort schedules the next review automatically.</p></section>
     </div>
-  </div>`;
+  </div>${savedDashboard()}`;
 }
 function dueIds(){const now=Date.now();return catalog.filter(word=>state.cards[word.id]&&Date.parse(state.cards[word.id].dueAt)<=now).map(word=>word.id);}
 function startDaily(){
@@ -90,6 +96,11 @@ function startExtraPractice(){
   if(!ids.length)ids=selectMore(catalog,[],10,`review-${today()}-${state.practiceCounter}`,state.settings);
   state.practiceCounter++;state.currentSession={type:'practice',ids,index:0,startedAt:new Date().toISOString()};revealed=false;sessionStartedAt=Date.now();saveState();location.hash='#/learn';render();
 }
+function startSavedPractice(){
+  const ids=state.savedIds.filter(id=>byId.has(id)).slice(0,20);
+  if(!ids.length){showToast('Save a few words first.');return;}
+  state.currentSession={type:'practice',ids,index:0,startedAt:new Date().toISOString()};revealed=false;sessionStartedAt=Date.now();saveState();location.hash='#/learn';render();
+}
 
 function renderSession(){
   const session=state.currentSession;if(!session)return renderLearn();
@@ -102,7 +113,7 @@ function renderSession(){
     <div class="session-top"><div><span class="badge">${esc(word.domain)}</span> <span class="badge level">${esc(word.level)}</span></div><span class="counter">${session.index+1} / ${session.ids.length}</span></div>
     <div class="progress-line" aria-label="Session progress ${pct}%"><i style="width:${pct}%"></i></div>
     <div class="word-area ${hideTerm?'listen-first':''}"><p class="eyebrow">${hideTerm?'Listen first':'German term'}</p><h2 id="cardHeading" tabindex="-1" lang="de">${hideTerm?'Listen to reveal':esc(word.term)}</h2><div class="grammar">Noun · plural: <span lang="de">${esc(word.plural)}</span></div>
-      <div class="audio-row"><button class="audio-button" data-speak="word" aria-label="Play German pronunciation for ${esc(word.term)}">Play word</button>${revealed?`<button class="audio-button" data-speak="sentence" aria-label="Play German example sentence">Play sentence</button>`:''}<button class="audio-button" data-action="stop-audio">Stop audio</button></div>
+      <div class="audio-row"><button class="audio-button" data-speak="word" aria-label="Play German pronunciation for ${esc(word.term)}">Play word</button>${revealed?`<button class="audio-button" data-speak="sentence" aria-label="Play German example sentence">Play sentence</button>`:''}<button class="audio-button save-button ${isSaved(word.id)?'saved':''}" data-save-id="${esc(word.id)}">${isSaved(word.id)?'Saved':'Save word'}</button><button class="audio-button" data-action="stop-audio">Stop audio</button></div>
     </div>
     ${revealed?`<div class="reveal-panel"><div class="translation">${esc(word.translation)}</div><p class="example-de" lang="de">${esc(word.exampleDe)}</p><p class="example-en">${esc(word.exampleEn)}</p><div class="rating-grid" aria-label="How well did you remember?"><button class="rating" data-rating="again">Again<small>10 min</small></button><button class="rating" data-rating="hard">Hard<small>shorter</small></button><button class="rating" data-rating="good">Good<small>normal</small></button><button class="rating" data-rating="easy">Easy<small>longer</small></button></div></div>`:`<div class="actions"><button class="button primary" data-action="reveal">Reveal meaning</button><button class="button" data-action="pause">Pause session</button></div>`}
   </section>`;
@@ -134,7 +145,7 @@ function renderPractice(){
   app.innerHTML=pageHeader('Optional practice','Choose your session','Train weak words, due reviews, listening, or a technical field without changing the identity of today’s set.')+`
   <div class="config-grid">
     <section class="card config-card"><h2>Build a session</h2><form id="practiceForm" class="form-grid">
-      <label>Mode<select name="mode"><option value="mixed">Mixed</option><option value="due">Due reviews</option><option value="weak">Weak words</option><option value="new">New words</option><option value="listening">Listening first</option></select></label>
+      <label>Mode<select name="mode"><option value="mixed">Mixed</option><option value="saved">Saved words</option><option value="due">Due reviews</option><option value="weak">Weak words</option><option value="new">New words</option><option value="listening">Listening first</option></select></label>
       <label>Technical field<select name="domain"><option value="">All fields</option>${domains.map(d=>`<option>${esc(d)}</option>`).join('')}</select></label>
       <div><label>Level</label><div class="filter-chips"><label><input type="checkbox" name="level" value="B2" checked><span>B2</span></label><label><input type="checkbox" name="level" value="C1" checked><span>C1</span></label></div></div>
       <label>Session length<select name="count"><option>5</option><option selected>10</option><option>20</option></select></label>
@@ -149,6 +160,7 @@ function submitPractice(form){
   if(mode==='due')pool=pool.filter(x=>dueIds().includes(x.id));
   if(mode==='weak')pool=pool.filter(x=>cardStatus(x.id)==='Weak');
   if(mode==='new')pool=pool.filter(x=>!state.cards[x.id]);
+  if(mode==='saved')pool=pool.filter(x=>state.savedIds.includes(x.id));
   let ids=selectMore(pool,[],count,`practice-${today()}-${state.practiceCounter++}`,filters);
   if(!ids.length){showToast('No words match those filters. Try Mixed or another field.');return;}
   state.settings.listenFirst=mode==='listening';state.currentSession={type:'practice',ids,index:0,startedAt:new Date().toISOString()};revealed=false;saveState();render();
@@ -166,14 +178,14 @@ function renderProgress(){
 }
 
 function renderLibrary(){
-  const params=new URLSearchParams(location.hash.split('?')[1]||''),q=params.get('q')||'',level=params.get('level')||'',domain=params.get('domain')||'';
+  const params=new URLSearchParams(location.hash.split('?')[1]||''),q=params.get('q')||'',level=params.get('level')||'',domain=params.get('domain')||'',savedOnly=params.get('saved')==='1';
   const domains=[...new Set(catalog.map(x=>x.domain))].sort();
-  const visible=catalog.filter(word=>(!q||`${word.term} ${word.translation} ${word.exampleDe}`.toLocaleLowerCase().includes(q.toLocaleLowerCase()))&&(!level||word.level===level)&&(!domain||word.domain===domain));
+  const visible=catalog.filter(word=>(!q||`${word.term} ${word.translation} ${word.exampleDe}`.toLocaleLowerCase().includes(q.toLocaleLowerCase()))&&(!level||word.level===level)&&(!domain||word.domain===domain)&&(!savedOnly||isSaved(word.id)));
   app.innerHTML=pageHeader('Reference','Vocabulary library',`${visible.length} of ${catalog.length} technical terms. Search German, English, or example sentences.`)+`
-  <div class="library-tools"><input id="librarySearch" type="search" value="${esc(q)}" placeholder="Search vocabulary…" aria-label="Search vocabulary"><select id="libraryLevel" aria-label="Filter by level"><option value="">All levels</option><option ${level==='B2'?'selected':''}>B2</option><option ${level==='C1'?'selected':''}>C1</option></select><select id="libraryDomain" aria-label="Filter by field"><option value="">All fields</option>${domains.map(d=>`<option ${domain===d?'selected':''}>${esc(d)}</option>`).join('')}</select></div>
-  <div class="library-list">${visible.length?visible.map(word=>`<article class="word-row"><div><strong lang="de">${esc(word.term)}</strong><small>Plural: <span lang="de">${esc(word.plural)}</span></small></div><div class="meaning">${esc(word.translation)}</div><div class="domain">${esc(word.domain)}</div><div class="status-pill">${word.level} · ${cardStatus(word.id)}</div><button class="audio-button" data-library-speak="${esc(word.id)}" aria-label="Play pronunciation for ${esc(word.term)}">Play</button></article>`).join(''):`<div class="empty">No vocabulary matches these filters.</div>`}</div>`;
+  <div class="library-tools"><input id="librarySearch" type="search" value="${esc(q)}" placeholder="Search vocabulary…" aria-label="Search vocabulary"><select id="libraryLevel" aria-label="Filter by level"><option value="">All levels</option><option ${level==='B2'?'selected':''}>B2</option><option ${level==='C1'?'selected':''}>C1</option></select><select id="libraryDomain" aria-label="Filter by field"><option value="">All fields</option>${domains.map(d=>`<option ${domain===d?'selected':''}>${esc(d)}</option>`).join('')}</select><a class="button ${savedOnly?'primary':''}" href="#/library${savedOnly?'':'?saved=1'}">${savedOnly?'Show all':`Saved (${state.savedIds.length})`}</a></div>
+  <div class="library-list">${visible.length?visible.map(word=>`<article class="word-row"><div><strong lang="de">${esc(word.term)}</strong><small>Plural: <span lang="de">${esc(word.plural)}</span></small></div><div class="meaning">${esc(word.translation)}</div><div class="domain">${esc(word.domain)}</div><div class="status-pill">${word.level} · ${cardStatus(word.id)}</div><div class="row-actions"><button class="audio-button" data-library-speak="${esc(word.id)}" aria-label="Play pronunciation for ${esc(word.term)}">Play</button><button class="audio-button save-button ${isSaved(word.id)?'saved':''}" data-save-id="${esc(word.id)}">${isSaved(word.id)?'Saved':'Save'}</button></div></article>`).join(''):`<div class="empty">${savedOnly?'No saved words yet. Save terms from a card or the full library.':'No vocabulary matches these filters.'}</div>`}</div>`;
 }
-function updateLibraryHash(){const q=document.querySelector('#librarySearch')?.value||'',level=document.querySelector('#libraryLevel')?.value||'',domain=document.querySelector('#libraryDomain')?.value||'';location.hash=`#/library?${new URLSearchParams({q,level,domain})}`;}
+function updateLibraryHash(){const q=document.querySelector('#librarySearch')?.value||'',level=document.querySelector('#libraryLevel')?.value||'',domain=document.querySelector('#libraryDomain')?.value||'',saved=new URLSearchParams(location.hash.split('?')[1]||'').get('saved')||'';location.hash=`#/library?${new URLSearchParams({q,level,domain,saved})}`;}
 
 function speak(text){
   if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){showToast('Speech is not available in this browser.');return;}
@@ -195,12 +207,14 @@ app.addEventListener('click',event=>{
   const action=event.target.closest('[data-action]')?.dataset.action;
   if(action==='start-daily')startDaily();
   if(action==='practice-more')startExtraPractice();
+  if(action==='practice-saved')startSavedPractice();
   if(action==='reveal'){revealed=true;renderSession();}
   if(action==='pause'){state.currentSession=null;saveState();render();}
   if(action==='stop-audio')stopAudio();
   const rating=event.target.closest('[data-rating]')?.dataset.rating;if(rating)answer(rating);
   const speakKind=event.target.closest('[data-speak]')?.dataset.speak;if(speakKind){const session=state.currentSession,word=byId.get(session.ids[session.index]);speak(speakKind==='word'?word.speechText:word.exampleDe);}
   const libraryId=event.target.closest('[data-library-speak]')?.dataset.librarySpeak;if(libraryId)speak(byId.get(libraryId)?.speechText||'');
+  const saveId=event.target.closest('[data-save-id]')?.dataset.saveId;if(saveId){const remove=isSaved(saveId);state.savedIds=toggleSaved(state.savedIds,saveId,remove);saveState();showToast(remove?'Removed from saved words.':'Saved to your dashboard.');render();}
 });
 app.addEventListener('submit',event=>{if(event.target.id==='practiceForm'){event.preventDefault();submitPractice(event.target);}});
 app.addEventListener('input',event=>{if(event.target.id==='librarySearch'){clearTimeout(updateLibraryHash.timer);updateLibraryHash.timer=setTimeout(updateLibraryHash,220);}});

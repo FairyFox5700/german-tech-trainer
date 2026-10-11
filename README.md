@@ -10,6 +10,7 @@ A static, privacy-first trainer for **B2–C1 technical German**. It runs entire
 - Again / Hard / Good / Easy spaced repetition
 - Weekly and monthly progress
 - Searchable 150-term technical library
+- Saved-word dashboard and dedicated saved-word practice
 - Listen-first mode
 - Local export, import, and reset
 - Offline support after the first successful load
