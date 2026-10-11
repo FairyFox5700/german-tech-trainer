@@ -1,0 +1,11 @@
+{
+  "name": "WerkWort — Technical German Trainer",
+  "short_name": "WerkWort",
+  "description": "Daily B2–C1 technical German vocabulary practice.",
+  "start_url": "./#/learn",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1eee4",
+  "theme_color": "#183c32",
+  "icons": [{"src":"./assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

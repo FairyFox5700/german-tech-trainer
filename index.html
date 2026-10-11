@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#183c32">
+  <meta name="description" content="Daily B2–C1 technical German vocabulary practice with reading, browser speech, spaced repetition and private progress tracking.">
+  <title>WerkWort — Technical German Trainer</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#/learn" aria-label="WerkWort home"><span class="brand-mark">WW</span><span><b>WerkWort</b><small>Technical German · B2–C1</small></span></a>
+      <div class="top-actions">
+        <span class="streak" id="streakLabel" aria-label="Current study streak">0 day streak</span>
+        <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings">Settings</button>
+      </div>
+    </header>
+
+    <nav class="side-nav" aria-label="Primary navigation">
+      <a href="#/learn" data-route="learn">Learn</a>
+      <a href="#/practice" data-route="practice">Practice</a>
+      <a href="#/progress" data-route="progress">Progress</a>
+      <a href="#/library" data-route="library">Library</a>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <div id="app" aria-live="polite"><div class="loading">Loading vocabulary…</div></div>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Mobile navigation">
+      <a href="#/learn" data-route="learn">Learn</a>
+      <a href="#/practice" data-route="practice">Practice</a>
+      <a href="#/progress" data-route="progress">Progress</a>
+      <a href="#/library" data-route="library">Library</a>
+    </nav>
+  </div>
+
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <form method="dialog" class="dialog-card" id="settingsForm">
+      <div class="dialog-head"><div><p class="eyebrow">Preferences</p><h2 id="settingsTitle">Settings & data</h2></div><button class="icon-button" value="cancel" aria-label="Close settings">Close</button></div>
+      <label>Daily target
+        <select id="dailyTarget"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+      </label>
+      <label>German speech rate
+        <input id="speechRate" type="range" min="0.6" max="1.2" step="0.05" value="0.9">
+        <output id="speechRateOutput">0.90×</output>
+      </label>
+      <label class="check-row"><input id="listenFirst" type="checkbox"> Listen-first mode (hide the written term before reveal)</label>
+      <div class="dialog-actions">
+        <button class="button primary" value="save" id="saveSettings">Save settings</button>
+        <button class="button" value="cancel">Cancel</button>
+      </div>
+      <hr>
+      <p class="muted">Progress stays in this browser. Export a backup before clearing browser data.</p>
+      <div class="data-actions">
+        <button type="button" class="button" id="exportButton">Export progress</button>
+        <label class="button file-button">Import progress<input id="importInput" type="file" accept="application/json"></label>
+        <button type="button" class="button danger" id="resetButton">Reset progress</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

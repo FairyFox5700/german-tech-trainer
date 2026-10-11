@@ -1,0 +1,13 @@
+import {chromium} from 'file:///C:/Users/tysch/AppData/Local/hermes/skills/creative/linkedin-one-pager/scripts/node_modules/playwright/index.mjs';
+const browser=await chromium.launch({headless:true});
+const context=await browser.newContext({viewport:{width:1440,height:980}});
+const page=await context.newPage();
+await page.goto('http://127.0.0.1:4173/#/learn',{waitUntil:'networkidle'});
+await page.screenshot({path:'artifacts/desktop-learn.png',fullPage:true});
+await page.setViewportSize({width:390,height:844});
+await page.locator('[data-action="start-daily"]').click();
+await page.locator('[data-action="reveal"]').click();
+console.log(await page.evaluate(()=>({nav:document.querySelector('.bottom-nav').getBoundingClientRect().toJSON(),ratings:document.querySelector('.rating-grid').getBoundingClientRect().toJSON(),card:document.querySelector('.session-card').getBoundingClientRect().toJSON(),scrollHeight:document.documentElement.scrollHeight,viewport:innerHeight})));
+await page.screenshot({path:'artifacts/mobile-card.png',fullPage:true});
+await browser.close();
+console.log('saved artifacts/desktop-learn.png and artifacts/mobile-card.png');
