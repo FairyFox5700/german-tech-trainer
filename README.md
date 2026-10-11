@@ -9,7 +9,7 @@ A static, privacy-first trainer for **B2–C1 technical German**. It runs entire
 - German word and example-sentence speech via the Web Speech API
 - Again / Hard / Good / Easy spaced repetition
 - Weekly and monthly progress
-- Searchable 50-term technical library
+- Searchable 150-term technical library
 - Listen-first mode
 - Local export, import, and reset
 - Offline support after the first successful load

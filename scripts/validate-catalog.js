@@ -5,7 +5,7 @@ const file = new URL('../content/catalog.json', import.meta.url);
 const data = JSON.parse(await readFile(file, 'utf8'));
 const errors = [];
 if (data.schemaVersion !== 1) errors.push('schemaVersion must be 1');
-if (!Array.isArray(data.words) || data.words.length < 50) errors.push('catalog must contain at least 50 words');
+if (!Array.isArray(data.words) || data.words.length < 150) errors.push('catalog must contain at least 150 words');
 const ids = new Set();
 const terms = new Set();
 for (const [index, word] of (data.words || []).entries()) {
