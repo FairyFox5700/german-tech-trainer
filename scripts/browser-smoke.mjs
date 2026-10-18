@@ -51,20 +51,24 @@ await page.locator('[data-action="reveal"]').click();
 for(const width of [390,320]){
   await page.setViewportSize({width,height:700});
   await page.waitForTimeout(80);
-  const layout=await page.evaluate(()=>{
+  const layout=await page.evaluate(async()=>{
     const heading=document.querySelector('#cardHeading').getBoundingClientRect();
-    const nav=document.querySelector('.bottom-nav').getBoundingClientRect();
     const buttons=[...document.querySelectorAll('.audio-button')].map(button=>button.getBoundingClientRect());
+    document.documentElement.style.scrollBehavior='auto';
     window.scrollTo(0,document.documentElement.scrollHeight);
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    const nav=document.querySelector('.bottom-nav').getBoundingClientRect();
     const ratings=document.querySelector('.rating-grid').getBoundingClientRect();
-    return {overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,headingHeight:heading.height,fontSize:parseFloat(getComputedStyle(document.querySelector('#cardHeading')).fontSize),navTop:nav.top,ratingsBottom:ratings.bottom,minButtonHeight:Math.min(...buttons.map(x=>x.height)),minButtonWidth:Math.min(...buttons.map(x=>x.width))};
+    return {overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,headingHeight:heading.height,headingWidth:heading.width,headingScrollWidth:document.querySelector('#cardHeading').scrollWidth,fontSize:parseFloat(getComputedStyle(document.querySelector('#cardHeading')).fontSize),navTop:nav.top,ratingsBottom:ratings.bottom,minButtonHeight:Math.min(...buttons.map(x=>x.height)),minButtonWidth:Math.min(...buttons.map(x=>x.width))};
   });
   assert.ok(layout.overflow<=0,`${width}px long-term overflow: ${layout.overflow}px`);
   assert.ok(layout.headingHeight<=110,`${width}px long-term heading too tall: ${layout.headingHeight}px`);
-  assert.ok(layout.fontSize>=28,`${width}px long-term text too small: ${layout.fontSize}px`);
+  assert.ok(layout.headingHeight<=layout.fontSize*1.2,`${width}px long-term heading wrapped to another line`);
+  assert.ok(layout.headingScrollWidth<=layout.headingWidth,`${width}px long-term heading overflows its card`);
+  assert.ok(layout.fontSize>=18,`${width}px long-term text too small: ${layout.fontSize}px`);
   assert.ok(layout.minButtonHeight>=44,`${width}px touch target too short: ${layout.minButtonHeight}px`);
   assert.ok(layout.minButtonWidth>=100,`${width}px touch target too narrow: ${layout.minButtonWidth}px`);
-  assert.ok(layout.ratingsBottom<=layout.navTop,`${width}px bottom navigation covers the ratings`);
+  assert.ok(layout.ratingsBottom<=layout.navTop,`${width}px bottom navigation covers the ratings: ${JSON.stringify(layout)}`);
 }
 await page.goto(`${base}/#/library`);
 await page.waitForSelector('main h1');

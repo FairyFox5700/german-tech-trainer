@@ -117,7 +117,15 @@ function renderSession(){
     </div>
     ${revealed?`<div class="reveal-panel"><div class="translation">${esc(word.translation)}</div><p class="example-de" lang="de">${esc(word.exampleDe)}</p><p class="example-en">${esc(word.exampleEn)}</p><div class="rating-grid" aria-label="How well did you remember?"><button class="rating" data-rating="again">Again<small>10 min</small></button><button class="rating" data-rating="hard">Hard<small>shorter</small></button><button class="rating" data-rating="good">Good<small>normal</small></button><button class="rating" data-rating="easy">Easy<small>longer</small></button></div></div>`:`<div class="actions"><button class="button primary" data-action="reveal">Reveal meaning</button><button class="button" data-action="pause">Pause session</button></div>`}
   </section>`;
-  requestAnimationFrame(()=>document.querySelector('#cardHeading')?.focus({preventScroll:true}));
+  requestAnimationFrame(()=>{fitCardHeading();document.querySelector('#cardHeading')?.focus({preventScroll:true});});
+}
+function fitCardHeading(){
+  const heading=document.querySelector('#cardHeading');if(!heading)return;
+  heading.classList.remove('single-line-fit');heading.style.removeProperty('font-size');
+  if(innerWidth>640)return;
+  heading.classList.add('single-line-fit');
+  let size=parseFloat(getComputedStyle(heading).fontSize);
+  while(heading.scrollWidth>heading.clientWidth&&size>18){size-=.5;heading.style.fontSize=`${size}px`;}
 }
 function answer(rating){
   if(answerLock)return;answerLock=true;
@@ -227,6 +235,7 @@ document.addEventListener('keydown',event=>{
   if(event.key.toLowerCase()==='s'&&revealed&&state.currentSession){const w=byId.get(state.currentSession.ids[state.currentSession.index]);if(w)speak(w.exampleDe);}
 });
 window.addEventListener('hashchange',()=>{revealed=false;render();});
+window.addEventListener('resize',()=>requestAnimationFrame(fitCardHeading));
 document.querySelector('#settingsButton').addEventListener('click',openSettings);
 document.querySelector('#speechRate').addEventListener('input',event=>document.querySelector('#speechRateOutput').textContent=`${Number(event.target.value).toFixed(2)}×`);
 document.querySelector('#saveSettings').addEventListener('click',()=>{state.settings.dailyTarget=Number(document.querySelector('#dailyTarget').value);state.settings.speechRate=Number(document.querySelector('#speechRate').value);state.settings.listenFirst=document.querySelector('#listenFirst').checked;saveState();showToast('Settings saved.');setTimeout(render,0);});
