@@ -40,6 +40,34 @@ await page.setViewportSize({width:320,height:568});
 await page.waitForTimeout(100);
 const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
 assert.ok(overflow<=0,`mobile overflow: ${overflow}px`);
+await page.evaluate(()=>{
+  const state=JSON.parse(localStorage.getItem('werkwort.state.v1'));
+  state.currentSession={type:'daily',ids:['term-cloud-mandantenfaehigkeit'],index:0,startedAt:new Date().toISOString()};
+  localStorage.setItem('werkwort.state.v1',JSON.stringify(state));
+});
+await page.goto(`${base}/#/learn`);
+await page.reload({waitUntil:'networkidle'});
+await page.locator('[data-action="reveal"]').click();
+for(const width of [390,320]){
+  await page.setViewportSize({width,height:700});
+  await page.waitForTimeout(80);
+  const layout=await page.evaluate(()=>{
+    const heading=document.querySelector('#cardHeading').getBoundingClientRect();
+    const nav=document.querySelector('.bottom-nav').getBoundingClientRect();
+    const buttons=[...document.querySelectorAll('.audio-button')].map(button=>button.getBoundingClientRect());
+    window.scrollTo(0,document.documentElement.scrollHeight);
+    const ratings=document.querySelector('.rating-grid').getBoundingClientRect();
+    return {overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,headingHeight:heading.height,fontSize:parseFloat(getComputedStyle(document.querySelector('#cardHeading')).fontSize),navTop:nav.top,ratingsBottom:ratings.bottom,minButtonHeight:Math.min(...buttons.map(x=>x.height)),minButtonWidth:Math.min(...buttons.map(x=>x.width))};
+  });
+  assert.ok(layout.overflow<=0,`${width}px long-term overflow: ${layout.overflow}px`);
+  assert.ok(layout.headingHeight<=110,`${width}px long-term heading too tall: ${layout.headingHeight}px`);
+  assert.ok(layout.fontSize>=28,`${width}px long-term text too small: ${layout.fontSize}px`);
+  assert.ok(layout.minButtonHeight>=44,`${width}px touch target too short: ${layout.minButtonHeight}px`);
+  assert.ok(layout.minButtonWidth>=100,`${width}px touch target too narrow: ${layout.minButtonWidth}px`);
+  assert.ok(layout.ratingsBottom<=layout.navTop,`${width}px bottom navigation covers the ratings`);
+}
+await page.goto(`${base}/#/library`);
+await page.waitForSelector('main h1');
 await page.evaluate(async()=>{await navigator.serviceWorker.ready; return true;});
 await context.setOffline(true);
 await page.reload({waitUntil:'domcontentloaded'});
@@ -47,5 +75,5 @@ await page.waitForSelector('main h1');
 assert.match(await page.locator('main h1').innerText(),/Vocabulary library/);
 await context.setOffline(false);
 assert.equal(errors.length,0,`browser errors: ${errors.join(' | ')}`);
-console.log(JSON.stringify({learn:true,savedDashboard:true,savedLibraryFilter:true,reviewPersisted:true,progress:true,libraryCount:150,mobileOverflow:overflow,offlineReload:true,errors},null,2));
+console.log(JSON.stringify({learn:true,savedDashboard:true,savedLibraryFilter:true,reviewPersisted:true,progress:true,libraryCount:150,mobileOverflow:overflow,longTermMobile:[390,320],offlineReload:true,errors},null,2));
 await browser.close();

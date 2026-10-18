@@ -8,3 +8,28 @@
 .saved-dashboard{margin-top:18px;padding:24px}.saved-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.saved-head h2{font:700 28px WerkSerif,serif;margin:0}.saved-head p:not(.eyebrow){color:var(--muted);margin:6px 0 0}.saved-head>b{font:700 38px/1 WerkSerif,serif;color:var(--green)}.saved-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.saved-preview>div{background:var(--bg);padding:13px;min-width:0}.saved-preview span{display:block;font:700 17px/1.2 WerkSerif,serif;overflow-wrap:anywhere}.saved-preview small{display:block;color:var(--muted);margin-top:5px}.saved-empty{margin-top:18px;padding:28px}.save-button.saved{background:var(--green);color:#fff}.library-tools{grid-template-columns:minmax(220px,1fr) 150px 190px auto}.word-row{grid-template-columns:minmax(180px,1.4fr) minmax(150px,1fr) 125px 120px 140px}.row-actions{display:flex;gap:7px;justify-content:flex-end}.row-actions .audio-button{padding-inline:10px}
 @media(max-width:900px){.saved-preview{grid-template-columns:repeat(2,minmax(0,1fr))}.word-row{grid-template-columns:1fr 1fr 90px 130px}}
 @media(max-width:640px){.saved-dashboard{padding:20px}.saved-preview{grid-template-columns:1fr}.word-row{grid-template-columns:1fr 82px}.row-actions{grid-column:2;grid-row:1/4;flex-direction:column}.row-actions .audio-button{width:100%;padding:6px}.library-tools{grid-template-columns:1fr}}
+
+/* Keep study cards comfortable on narrow phones and for long German terms. */
+@media(max-width:640px){
+  main{padding:16px 10px calc(148px + env(safe-area-inset-bottom))}
+  .session-card{padding:clamp(16px,5vw,24px);min-height:0;margin:0 auto}
+  .session-top{gap:10px;align-items:flex-start}
+  .session-top>div{min-width:0}
+  .word-area{padding:clamp(22px,7vw,34px) 0 22px}
+  .word-area h2{font-size:clamp(30px,9vw,42px);line-height:1.08;letter-spacing:-.035em;overflow-wrap:break-word;word-break:normal;hyphens:auto}
+  .audio-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .audio-button{width:100%;padding:9px 8px;white-space:normal}
+  .reveal-panel{padding-top:20px}
+  .translation{font-size:clamp(22px,6.5vw,26px)}
+  .example-de{font-size:18px;line-height:1.5;margin-top:18px}
+  .example-en{font-size:16px;line-height:1.5}
+  .rating-grid{gap:8px}
+  .bottom-nav a{min-height:56px;display:grid;place-items:center}
+}
+@media(max-width:350px){
+  .topbar{padding-inline:9px}
+  .session-card{padding:15px}
+  .word-area h2{font-size:clamp(28px,9vw,32px)}
+  .audio-row{grid-template-columns:1fr}
+  .rating-grid{grid-template-columns:1fr 1fr}
+}
