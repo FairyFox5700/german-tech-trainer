@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "2026.10.1",
+  "disclaimer": "External resources open on their providers’ websites. Availability, accounts, advertisements, and access conditions are controlled by those providers.",
+  "resources": [
+    {
+      "id": "quizlet-deutsch-b2-wortschatz",
+      "provider": "Quizlet",
+      "category": "Quizlet B2 sets",
+      "title": "Deutsch B2 Wortschatz",
+      "description": "Large vocabulary set with Quizlet matching and practice tools.",
+      "action": "Find set on Quizlet",
+      "url": "https://quizlet.com/search?query=Deutsch%20B2%20Wortschatz&type=sets",
+      "level": "B2"
+    },
+    {
+      "id": "quizlet-german-b2-complete",
+      "provider": "Quizlet",
+      "category": "Quizlet B2 sets",
+      "title": "German B2 Complete Vocabulary",
+      "description": "Broad B2 vocabulary collection with sample translations.",
+      "action": "Find set on Quizlet",
+      "url": "https://quizlet.com/search?query=German%20B2%20Complete%20Vocabulary&type=sets",
+      "level": "B2"
+    },
+    {
+      "id": "quizlet-goethe-b2-verbs",
+      "provider": "Quizlet",
+      "category": "Quizlet B2 sets",
+      "title": "Goethe-B2 German Verb List",
+      "description": "Upper-intermediate verbs and usage examples for focused review.",
+      "action": "Find set on Quizlet",
+      "url": "https://quizlet.com/search?query=Goethe-B2%20German%20Verb%20List&type=sets",
+      "level": "B2"
+    },
+    {
+      "id": "quizlet-goethe-b2-vocabulary",
+      "provider": "Quizlet",
+      "category": "Quizlet B2 sets",
+      "title": "Goethe B2 Vocabulary",
+      "description": "Level-specific vocabulary and expressions for Goethe B2 preparation.",
+      "action": "Find set on Quizlet",
+      "url": "https://quizlet.com/search?query=Goethe%20B2%20Vocabulary&type=sets",
+      "level": "B2"
+    },
+    {
+      "id": "quizlet-b2-goethe-flashcards",
+      "provider": "Quizlet",
+      "category": "Quizlet B2 sets",
+      "title": "B2 Goethe Flashcards",
+      "description": "A compact set of essential terms and definitions.",
+      "action": "Find set on Quizlet",
+      "url": "https://quizlet.com/search?query=B2%20Goethe%20Flashcards&type=sets",
+      "level": "B2"
+    },
+    {
+      "id": "card2brain-goethe-b2",
+      "provider": "Card2Brain",
+      "category": "Spaced repetition & alternatives",
+      "title": "Card2Brain Goethe B2",
+      "description": "Digital flashcards with flip-mode and spaced-repetition study options.",
+      "action": "Open Card2Brain",
+      "url": "https://card2brain.ch/",
+      "level": "B2"
+    },
+    {
+      "id": "brainscape-b2-goethe-test",
+      "provider": "Brainscape",
+      "category": "Spaced repetition & alternatives",
+      "title": "B2 Goethe Test",
+      "description": "Topic-based decks including economy, society, and environment vocabulary.",
+      "action": "Open Brainscape deck",
+      "url": "https://www.brainscape.com/packs/b2-goethe-test-6656165",
+      "level": "B2"
+    },
+    {
+      "id": "goethe-official-b2-practice",
+      "provider": "Goethe-Institut",
+      "category": "Official exam practice",
+      "title": "Official Goethe-Zertifikat B2 practice",
+      "description": "Official listening, reading, writing, and speaking simulations, printable materials, audio, and digital training.",
+      "action": "Open official practice",
+      "url": "https://www.goethe.de/en/spr/prf/ueb/pb2.html",
+      "level": "B2",
+      "official": true
+    }
+  ]
+}

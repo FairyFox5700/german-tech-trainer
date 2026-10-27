@@ -8,6 +8,7 @@ A static, privacy-first trainer for **technical vocabulary, active German gramma
 - 48 original active-grammar sentence cards across A1, B1, B2, and C1
 - Configurable practice sessions from 1–100 cards, with pause and resume
 - Seven-day TELC B2 YouTube listening plan with local completion tracking
+- Curated B2 resource shelf for Quizlet, Card2Brain, Brainscape, and official Goethe practice
 - Optional vocabulary practice by field, level, and mode
 - German word and example-sentence speech via the Web Speech API
 - Again / Hard / Good / Easy spaced repetition

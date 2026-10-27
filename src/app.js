@@ -7,6 +7,7 @@ const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 let catalog = [];
 let grammar = [];
 let listeningPlan = [];
+let resources = [];
 let byId = new Map();
 let revealed = false;
 let answerLock = false;
@@ -218,11 +219,17 @@ function renderProgress(){
   <section class="card chart-card"><h2>Vocabulary state</h2><div class="mastery"><div><b>${catalog.length-entries.length}</b><span>New</span></div><div><b>${entries.length-mastered-weak}</b><span>Learning</span></div><div><b>${mastered}</b><span>Mastered</span></div><div><b>${weak}</b><span>Weak</span></div></div><p class="muted">“Mastered” means several successful recalls over spaced days. This is vocabulary practice data, not a formal CEFR proficiency assessment.</p></section>`;
 }
 
+function resourceHub(){
+  if(!resources.length)return '';
+  const categories=[...new Set(resources.map(resource=>resource.category))];
+  return `<section class="card resource-hub"><div class="resource-head"><div><p class="eyebrow">B2 study shelf</p><h2>External flashcards & exam practice</h2><p>Open recommended Quizlet searches, spaced-repetition decks, and official Goethe practice without leaving your WerkWort plan behind.</p></div><span class="badge">${resources.length} resources</span></div>${categories.map(category=>`<div class="resource-section"><h3>${esc(category)}</h3><div class="resource-grid">${resources.filter(resource=>resource.category===category).map(resource=>`<article class="resource-card ${resource.official?'official':''}"><div class="resource-meta"><span>${esc(resource.provider)}</span><span>${esc(resource.level)}</span></div><h4>${esc(resource.title)}</h4><p>${esc(resource.description)}</p><a class="button ${resource.official?'primary':''}" href="${esc(resource.url)}" target="_blank" rel="noopener noreferrer">${esc(resource.action)}</a></article>`).join('')}</div></div>`).join('')}<p class="muted resource-note">External providers control availability and may require an account. Quizlet cards use search links because public set URLs can move or be replaced.</p></section>`;
+}
+
 function renderLibrary(){
   const params=new URLSearchParams(location.hash.split('?')[1]||''),q=params.get('q')||'',level=params.get('level')||'',domain=params.get('domain')||'',savedOnly=params.get('saved')==='1';
   const domains=[...new Set(catalog.map(x=>x.domain))].sort();
   const visible=catalog.filter(word=>(!q||`${word.term} ${word.translation} ${word.exampleDe}`.toLocaleLowerCase().includes(q.toLocaleLowerCase()))&&(!level||word.level===level)&&(!domain||word.domain===domain)&&(!savedOnly||isSaved(word.id)));
-  app.innerHTML=pageHeader('Reference','Vocabulary library',`${visible.length} of ${catalog.length} technical terms. Search German, English, or example sentences.`)+`
+  app.innerHTML=pageHeader('Reference','Vocabulary library',`${visible.length} of ${catalog.length} technical terms. Search German, English, or example sentences.`)+resourceHub()+`
   <div class="library-tools"><input id="librarySearch" type="search" value="${esc(q)}" placeholder="Search vocabulary…" aria-label="Search vocabulary"><select id="libraryLevel" aria-label="Filter by level"><option value="">All levels</option><option ${level==='B2'?'selected':''}>B2</option><option ${level==='C1'?'selected':''}>C1</option></select><select id="libraryDomain" aria-label="Filter by field"><option value="">All fields</option>${domains.map(d=>`<option ${domain===d?'selected':''}>${esc(d)}</option>`).join('')}</select><a class="button ${savedOnly?'primary':''}" href="#/library${savedOnly?'':'?saved=1'}">${savedOnly?'Show all':`Saved (${state.savedIds.length})`}</a></div>
   <div class="library-list">${visible.length?visible.map(word=>`<article class="word-row"><div><strong lang="de">${esc(word.term)}</strong><small>Plural: <span lang="de">${esc(word.plural)}</span></small></div><div class="meaning">${esc(word.translation)}</div><div class="domain">${esc(word.domain)}</div><div class="status-pill">${word.level} · ${cardStatus(word.id)}</div><div class="row-actions"><button class="audio-button" data-library-speak="${esc(word.id)}" aria-label="Play pronunciation for ${esc(word.term)}">Play</button><button class="audio-button save-button ${isSaved(word.id)?'saved':''}" data-save-id="${esc(word.id)}">${isSaved(word.id)?'Saved':'Save'}</button></div></article>`).join(''):`<div class="empty">${savedOnly?'No saved words yet. Save terms from a card or the full library.':'No vocabulary matches these filters.'}</div>`}</div>`;
 }
@@ -284,10 +291,10 @@ document.querySelector('#resetButton').addEventListener('click',resetProgress);
 
 async function init(){
   try{
-    const [catalogResponse,grammarResponse,listeningResponse]=await Promise.all([fetch('./content/catalog.json'),fetch('./content/grammar.json'),fetch('./content/listening-plan.json')]);
-    if(!catalogResponse.ok||!grammarResponse.ok||!listeningResponse.ok)throw new Error('One or more study files could not be loaded');
-    const [catalogData,grammarData,listeningData]=await Promise.all([catalogResponse.json(),grammarResponse.json(),listeningResponse.json()]);
-    catalog=catalogData.words;grammar=grammarData.exercises;listeningPlan=listeningData.days;byId=new Map([...catalog,...grammar].map(item=>[item.id,item]));
+    const [catalogResponse,grammarResponse,listeningResponse,resourcesResponse]=await Promise.all([fetch('./content/catalog.json'),fetch('./content/grammar.json'),fetch('./content/listening-plan.json'),fetch('./content/resources.json')]);
+    if(!catalogResponse.ok||!grammarResponse.ok||!listeningResponse.ok||!resourcesResponse.ok)throw new Error('One or more study files could not be loaded');
+    const [catalogData,grammarData,listeningData,resourcesData]=await Promise.all([catalogResponse.json(),grammarResponse.json(),listeningResponse.json(),resourcesResponse.json()]);
+    catalog=catalogData.words;grammar=grammarData.exercises;listeningPlan=listeningData.days;resources=resourcesData.resources;byId=new Map([...catalog,...grammar].map(item=>[item.id,item]));
     if(!location.hash)location.hash='#/learn';render();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
   }catch(error){app.innerHTML=`<div class="error-state"><h1>Study content could not load</h1><p>${esc(error.message)}. Reload the page while online.</p><button class="button primary" onclick="location.reload()">Reload</button></div>`;}
 }

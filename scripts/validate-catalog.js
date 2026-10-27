@@ -2,8 +2,8 @@ import {readFile} from 'node:fs/promises';
 import {normalizeTerm} from '../src/core.js';
 
 const readJson = async name => JSON.parse(await readFile(new URL(`../content/${name}`, import.meta.url), 'utf8'));
-const [data, grammar, listening] = await Promise.all([
-  readJson('catalog.json'), readJson('grammar.json'), readJson('listening-plan.json')
+const [data, grammar, listening, resources] = await Promise.all([
+  readJson('catalog.json'), readJson('grammar.json'), readJson('listening-plan.json'), readJson('resources.json')
 ]);
 const errors = [];
 if (data.schemaVersion !== 1) errors.push('catalog schemaVersion must be 1');
@@ -49,8 +49,19 @@ for (const [index, day] of (listening.days || []).entries()) {
   try{const url=new URL(day.url);if(url.hostname!=='www.youtube.com'||url.protocol!=='https:')errors.push(`${at}.url must be an HTTPS YouTube watch URL`);}catch{errors.push(`${at}.url is invalid`);}
 }
 
+if (resources.schemaVersion !== 1) errors.push('resources schemaVersion must be 1');
+if (!Array.isArray(resources.resources) || resources.resources.length !== 8) errors.push('resources must contain exactly 8 curated links');
+const resourceIds=new Set();
+for(const [index,resource] of (resources.resources||[]).entries()){
+  const at=`resources[${index}]`;
+  for(const field of ['id','provider','category','title','description','action','url','level'])if(!resource[field]||typeof resource[field]!=='string')errors.push(`${at}.${field} is required`);
+  if(resource.level!=='B2')errors.push(`${at}.level must be B2`);
+  if(resourceIds.has(resource.id))errors.push(`duplicate resource id: ${resource.id}`);else resourceIds.add(resource.id);
+  try{const url=new URL(resource.url);if(url.protocol!=='https:')errors.push(`${at}.url must use HTTPS`);}catch{errors.push(`${at}.url is invalid`);}
+}
+
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);
 }
-console.log(`Content valid: ${data.words.length} vocabulary terms, ${grammar.exercises.length} grammar exercises, ${listening.days.length} listening days (${data.catalogVersion})`);
+console.log(`Content valid: ${data.words.length} vocabulary terms, ${grammar.exercises.length} grammar exercises, ${listening.days.length} listening days, ${resources.resources.length} external resources (${data.catalogVersion})`);
