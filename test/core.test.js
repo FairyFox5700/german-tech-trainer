@@ -7,7 +7,9 @@ import {
   scheduleReview,
   aggregateProgress,
   localDateKey,
-  toggleSaved
+  toggleSaved,
+  parsePracticeCount,
+  togglePlanCompletion
 } from '../src/core.js';
 
 const catalog = [
@@ -100,4 +102,23 @@ test('toggleSaved adds a word once without mutating the original list', () => {
 
 test('toggleSaved removes an already saved word when requested', () => {
   assert.deepEqual(toggleSaved(['a', 'b'], 'a', true), ['b']);
+});
+
+test('custom practice counts accept whole numbers from 1 to 100', () => {
+  for(const value of [1,' 12 ',25,100])assert.equal(parsePracticeCount(value),Number(String(value).trim()));
+  for(const value of ['',0,-1,'12.5','nope',101])assert.equal(parsePracticeCount(value),null);
+});
+
+test('grammar exercises can be selected by CEFR level beyond ten cards', () => {
+  const grammar=Array.from({length:25},(_,i)=>({id:`g${i}`,promptDe:`Satz ${i}`,level:i<12?'B1':'B2',status:'active'}));
+  const ids=selectMore(grammar,[],20,'grammar',{levels:['B1','B2'],domains:[]});
+  assert.equal(ids.length,20);
+  assert.equal(new Set(ids).size,20);
+});
+
+test('listening completion is unique, reversible, and ignores unknown ids', () => {
+  const valid=['day-1','day-2'];
+  assert.deepEqual(togglePlanCompletion(['day-1','day-1','old'],'day-2',true,valid),['day-1','day-2']);
+  assert.deepEqual(togglePlanCompletion(['day-1','day-2'],'day-1',false,valid),['day-2']);
+  assert.deepEqual(togglePlanCompletion(['day-1'],'old',true,valid),['day-1']);
 });

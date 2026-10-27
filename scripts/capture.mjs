@@ -23,5 +23,12 @@ await page.evaluate(()=>{
 await page.reload({waitUntil:'networkidle'});
 await page.setViewportSize({width:1440,height:980});
 await page.screenshot({path:'artifacts/desktop-saved-dashboard.png',fullPage:true});
+await page.goto('http://127.0.0.1:4173/#/practice',{waitUntil:'networkidle'});
+await page.screenshot({path:'artifacts/desktop-practice-builder.png',fullPage:true});
+await page.locator('#practiceKind').selectOption('grammar');
+await page.locator('#practiceCount').fill('12');
+await page.locator('#practiceForm button[type="submit"]').click();
+await page.setViewportSize({width:390,height:844});
+await page.screenshot({path:'artifacts/mobile-grammar-card.png',fullPage:true});
 await browser.close();
-console.log('saved desktop, mobile, and saved-dashboard screenshots');
+console.log('saved desktop dashboard/practice and mobile vocabulary/grammar screenshots');

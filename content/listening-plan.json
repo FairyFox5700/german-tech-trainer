@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "2026.10.1",
+  "disclaimer": "Independent practice links in the telc B2 exam style. WerkWort is not affiliated with telc gGmbH. YouTube requires an internet connection.",
+  "days": [
+    {
+      "id": "telc-listening-day-1",
+      "day": 1,
+      "focus": "Teil 1 · Global verstehen",
+      "task": "Listen once without captions and decide what each news item is mainly about.",
+      "minutes": 18,
+      "title": "TELC B2 Hörverstehen · Modelltest 1",
+      "url": "https://www.youtube.com/watch?v=sRyoJLjewzI",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-2",
+      "day": 2,
+      "focus": "Teil 2 · Details erkennen",
+      "task": "Write down names, numbers, reasons, and contrasts while listening once.",
+      "minutes": 20,
+      "title": "telc Deutsch B2 · Prüfung 13 · Hörverstehen Teil 1",
+      "url": "https://www.youtube.com/watch?v=gOx6_6W-3DI",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-3",
+      "day": 3,
+      "focus": "Teil 3 · Selektiv hören",
+      "task": "Focus only on the requested facts in the short announcements.",
+      "minutes": 18,
+      "title": "TELC B2 Hörverstehen · Modelltest",
+      "url": "https://www.youtube.com/watch?v=IkHckC2wnm8",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-4",
+      "day": 4,
+      "focus": "Tempo wechseln",
+      "task": "Practise switching quickly between global and selective listening.",
+      "minutes": 19,
+      "title": "Telc B2 Hörverstehen · Modelltest 2",
+      "url": "https://www.youtube.com/watch?v=sRretJ_pWGQ",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-5",
+      "day": 5,
+      "focus": "Ablenker erkennen",
+      "task": "Notice negation, corrections, changed opinions, and similar-sounding details.",
+      "minutes": 18,
+      "title": "TELC B2 Hörverstehen · Modelltest",
+      "url": "https://www.youtube.com/watch?v=N1qAkiLmL9k",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-6",
+      "day": 6,
+      "focus": "Kompletter Probetest",
+      "task": "Complete one uninterrupted mock under exam conditions; check solutions only at the end.",
+      "minutes": 23,
+      "title": "Telc Deutsch B2 · Kompletter Modelltest 2",
+      "url": "https://www.youtube.com/watch?v=Q2uFwMLV7fc",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    },
+    {
+      "id": "telc-listening-day-7",
+      "day": 7,
+      "focus": "Fehleranalyse",
+      "task": "Replay missed sections, explain each error, and save three useful phrases.",
+      "minutes": 19,
+      "title": "Telc Deutsch B2 · Kompletter Modelltest 1",
+      "url": "https://www.youtube.com/watch?v=P74BI70LFbw",
+      "steps": [
+        "Read the task before listening.",
+        "Listen once without captions.",
+        "Record and check your answers.",
+        "Replay difficult parts and note three phrases."
+      ]
+    }
+  ]
+}

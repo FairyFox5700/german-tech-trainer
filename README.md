@@ -1,11 +1,14 @@
 # WerkWort
 
-A static, privacy-first trainer for **B2–C1 technical German**. It runs entirely in the browser and is designed for GitHub Pages.
+A static, privacy-first trainer for **technical vocabulary, active German grammar from A1–C1, and TELC B2 listening practice**. It runs entirely in the browser and is designed for GitHub Pages.
 
 ## Features
 
-- Deterministic daily vocabulary set
-- Optional extra practice by field, level, and mode
+- Deterministic daily technical-vocabulary set
+- 48 original active-grammar sentence cards across A1, B1, B2, and C1
+- Configurable practice sessions from 1–100 cards, with pause and resume
+- Seven-day TELC B2 YouTube listening plan with local completion tracking
+- Optional vocabulary practice by field, level, and mode
 - German word and example-sentence speech via the Web Speech API
 - Again / Hard / Good / Easy spaced repetition
 - Weekly and monthly progress

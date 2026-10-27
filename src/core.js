@@ -26,11 +26,11 @@ function eligibleWords(catalog, filters={}) {
   const domains = filters.domains?.length ? new Set(filters.domains) : null;
   const seenTerms = new Set();
   return catalog
-    .filter(word => word?.id && word?.term && word.status !== 'deprecated')
+    .filter(word => word?.id && (word?.term || word?.promptDe) && word.status !== 'deprecated')
     .filter(word => !levels || levels.has(word.level))
     .filter(word => !domains || domains.has(word.domain))
     .filter(word => {
-      const key = normalizeTerm(word.term);
+      const key = word.term ? normalizeTerm(word.term) : String(word.id);
       if (seenTerms.has(key)) return false;
       seenTerms.add(key);
       return true;
@@ -65,6 +65,20 @@ export function selectMore(catalog, shownIds=[], count=10, seed='extra', filters
     .sort((a,b) => hash32(`${seed}|${a.id}`) - hash32(`${seed}|${b.id}`) || a.id.localeCompare(b.id))
     .slice(0, count)
     .map(word => word.id);
+}
+
+export function parsePracticeCount(value, min=1, max=100) {
+  const text=String(value ?? '').trim();
+  if(!/^\d+$/.test(text)) return null;
+  const count=Number(text);
+  return Number.isSafeInteger(count)&&count>=min&&count<=max?count:null;
+}
+
+export function togglePlanCompletion(completedIds=[], id, complete=true, validIds=[]) {
+  const valid=new Set(validIds);
+  const clean=[...new Set(Array.isArray(completedIds)?completedIds:[])].filter(item=>valid.has(item));
+  if(!valid.has(id)) return clean;
+  return complete ? (clean.includes(id)?clean:[...clean,id]) : clean.filter(item=>item!==id);
 }
 
 function addMinutes(iso, minutes) {

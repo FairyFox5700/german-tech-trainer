@@ -1,7 +1,7 @@
 {
   "name": "WerkWort — Technical German Trainer",
   "short_name": "WerkWort",
-  "description": "Daily B2–C1 technical German vocabulary practice.",
+  "description": "Technical German vocabulary, active grammar A1–C1, and TELC B2 listening practice.",
   "start_url": "./#/learn",
   "scope": "./",
   "display": "standalone",
